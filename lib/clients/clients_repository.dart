@@ -1,5 +1,7 @@
 import 'package:bloc_repository/clients/clients.dart';
+import 'package:injectable/injectable.dart';
 
+@injectable
 class ClientRepository {
   final List<Client> _clients = [];
 

@@ -2,7 +2,9 @@ import 'package:bloc/bloc.dart';
 import 'package:bloc_repository/clients/clients.dart';
 import 'package:bloc_repository/clients/clients_repository.dart';
 import 'package:bloc_repository/cubits/client_cubit_states.dart';
+import 'package:injectable/injectable.dart';
 
+@injectable
 class ClientCubit extends Cubit<ClientCubitState> {
   final ClientRepository repository;
   ClientCubit({required this.repository})
@@ -26,6 +28,7 @@ class ClientCubit extends Cubit<ClientCubitState> {
       } else {
         emit(const ClientCubitState.loading());
         final clients = repository.add(client);
+
         emit(ClientCubitState.sucess(clients: clients));
       }
     } catch (e) {

@@ -1,7 +1,7 @@
 import 'package:bloc_repository/clients/clients.dart';
-import 'package:bloc_repository/clients/clients_repository.dart';
 import 'package:bloc_repository/cubits/client_cubit_states.dart';
 import 'package:bloc_repository/cubits/cliente_cubits.dart';
+import 'package:bloc_repository/di/instances.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -15,9 +15,7 @@ class ClientPage extends StatefulWidget {
 }
 
 class _ClientPageState extends State<ClientPage> {
-  // late final ClientBloc bloc;
   late final ClientCubit cubit;
-  final ClientRepository repository = ClientRepository();
   late final TextEditingController _nomeController = TextEditingController();
   late final TextEditingController _cpfController = TextEditingController();
   List<Client> clientList = [];
@@ -25,15 +23,12 @@ class _ClientPageState extends State<ClientPage> {
   @override
   void initState() {
     super.initState();
-    //bloc = ClientBloc();
-    //bloc.add(LoadClientEvent());
-    cubit = ClientCubit(repository: repository);
+    cubit = getIt.get<ClientCubit>();
     cubit.getClientsFromRepository();
   }
 
   @override
   void dispose() {
-    //bloc.close();
     cubit.close();
     super.dispose();
   }
@@ -126,6 +121,7 @@ class _ClientPageState extends State<ClientPage> {
           state.maybeWhen(
               error: () => ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
+                      duration: Duration(seconds: 2),
                       content: Text("Erro: Nome maior que 5 caracteres"))),
               sucess: (callBackClientList) {
                 clientList = callBackClientList;

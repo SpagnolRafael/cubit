@@ -1,7 +1,9 @@
+import 'package:bloc_repository/di/instances.dart';
 import 'package:bloc_repository/views/clients_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
+  configureDependencies();
   runApp(const MyApp());
 }
 
