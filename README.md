@@ -1,6 +1,7 @@
-# bloc_repository
+# cubit
 
-A new Flutter project.
+Simple ListView with cubit, freezed, jsonSerializable, get_it
+
 
 ## Getting Started
 
