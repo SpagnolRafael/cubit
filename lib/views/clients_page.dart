@@ -1,10 +1,11 @@
 import 'package:bloc_repository/clients/clients.dart';
 import 'package:bloc_repository/clients/clients_repository.dart';
-import 'package:bloc_repository/clients/clients_state.dart';
 import 'package:bloc_repository/cubits/client_cubit_states.dart';
 import 'package:bloc_repository/cubits/cliente_cubits.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../cubits/client_cubit_states.dart';
 
 class ClientPage extends StatefulWidget {
   const ClientPage({Key? key}) : super(key: key);
@@ -122,32 +123,34 @@ class _ClientPageState extends State<ClientPage> {
       body: BlocConsumer<ClientCubit, ClientCubitState>(
         bloc: cubit,
         listener: (context, state) {
-          if (state is ClientCubitErrorState) {
-            const snackBar =
-                SnackBar(content: Text("Erro: Nome maior que 5 caracteres"));
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          }
+          state.maybeWhen(
+              error: () => ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text("Erro: Nome maior que 5 caracteres"))),
+              sucess: (callBackClientList) {
+                clientList = callBackClientList;
+              },
+              orElse: () {});
         },
         builder: (context, state) {
-          if (state is ClientCubitLoadingState) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is ClientCubitSucessState) {
-            clientList = state.clients;
-          }
-          return ListView.separated(
-            itemBuilder: (context, index) => ListTile(
-              title: Text(clientList[index].name),
-              subtitle: Text(clientList[index].cpf),
-              trailing: IconButton(
-                onPressed: () {
-                  // bloc.add(RemoveClientEvent(client: clientList[index]));
-                  cubit.removeClientsFromRepository(client: clientList[index]);
-                },
-                icon: const Icon(Icons.delete),
+          return state.maybeWhen(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            orElse: () => ListView.separated(
+              itemBuilder: (context, index) => ListTile(
+                title: Text(clientList[index].name),
+                subtitle: Text(clientList[index].cpf),
+                trailing: IconButton(
+                  onPressed: () {
+                    // bloc.add(RemoveClientEvent(client: clientList[index]));
+                    cubit.removeClientsFromRepository(
+                        client: clientList[index]);
+                  },
+                  icon: const Icon(Icons.delete),
+                ),
               ),
+              separatorBuilder: (_, __) => const Divider(),
+              itemCount: clientList.length,
             ),
-            separatorBuilder: (_, __) => const Divider(),
-            itemCount: clientList.length,
           );
         },
       ),
